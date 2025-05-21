@@ -1,0 +1,9 @@
+div.dt-container .dt-search input {
+    margin-bottom: 20px;
+    width: 50%;
+    height: 40px;
+}   
+
+div.dt-search > label {
+    font-size: 20px;
+}

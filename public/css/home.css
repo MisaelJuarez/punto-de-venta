@@ -1,0 +1,53 @@
+.card-icon {
+    color: black;
+    font-size: 8rem;
+}
+
+.card-header {
+    color: black;
+    text-align: center;
+    font-size: 20px;
+    font-weight: bold;
+}
+.card-title {
+    text-align: center;
+}
+.card {
+    -webkit-border-radius: 14px;
+    border-radius: 14px;
+    background: rgb(221, 221, 221);
+    box-shadow: 0px 14px 18px 0px rgba(0,0,0,0.75);
+    border: none;
+    cursor: pointer;
+    transition: transform 0.1s ease;
+}
+.card:hover {
+    -webkit-border-radius: 14px;
+    border-radius: 14px;
+    background: rgb(221, 221, 221);
+    box-shadow: 4px 4px 0px rgb(52, 160, 255), -4px -4px 0px rgb(16, 143, 255);
+    border: none;
+    cursor: pointer;
+    transition: all 0.1s ease;
+}
+
+.card:active {
+    transform: scale(0.95); 
+}
+
+.header-informacion {
+    background-color: rgb(100, 105, 255);
+}
+
+.header-registrar_usuario {
+    background-color: rgb(255, 88, 91);
+}
+
+.header-inventario {
+    background-color: rgb(235, 255, 108);
+}
+
+.card-header:first-child {
+    border-top-left-radius: 14px;
+    border-top-right-radius: 14px; 
+}

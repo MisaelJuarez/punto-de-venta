@@ -1,0 +1,40 @@
+#contenedor-tabla {
+    padding: 5px;
+    border-radius: 4px;
+    background: #ffffff;
+    border: none;
+    box-shadow: 1px 20px 38px 0px rgba(0,0,0,0.75);
+    z-index: 1;
+}
+
+
+.custom-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.custom-toolbar .left-section {
+    width: 300px;
+    float: left;
+}
+
+.custom-toolbar .right-section {
+    float: right;
+}
+
+.dt-paging {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-top: 10px;
+}
+.dt-paging > nav {
+    display: flex;
+}
+
+.dt-info {
+    margin-top: 10px;
+    float: left;
+}
