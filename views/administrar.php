@@ -1,3 +1,9 @@
+<?php
+if (!isset($_SESSION['usuario'])) {
+    header("location:login");
+    exit();
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -15,6 +21,7 @@
                     <th scope="col">Nombre</th>
                     <th scope="col">Apellidos</th>
                     <th scope="col">Correo electronico</th>
+                    <th scope="col">Rol</th>
                     <th scope="col">Acciones</th> 
                 </tr>
             </thead>
@@ -47,6 +54,10 @@
                     <div class="col-md-3">
                         <label for="editorial" class="form-label">Contraseña</label>
                         <input type="password" class="form-control" name="pass-editar" id="pass-editar" required>
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select form-select-sm mb-3" aria-label=".form-select-sm example" name="rol" id="rol">
+                        </select>
                     </div>
                 </form>
             </div>

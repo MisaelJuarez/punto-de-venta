@@ -1,8 +1,8 @@
 let tabla, productos = '',precio = 0, cambio = 0, pagos = 0, efectivo = 0, tarjeta = 0, transferencia = 0;
 
-const obtener_datos = () => {
+const obtener_datos_caja = () => {
     let data = new FormData();
-    data.append('metodo', 'obtener_datos');
+    data.append('metodo', 'obtener_datos_caja');
     
     fetch("app/controller/home.php", {
         method: "POST",
@@ -209,7 +209,7 @@ document.addEventListener('DOMContentLoaded',() => {
 });
 
 document.getElementById('btn-buscar').addEventListener('click',() => {
-    obtener_datos();
+    obtener_datos_caja();
 });
 
 document.getElementById('productos_vender').addEventListener('focus',(e) => {

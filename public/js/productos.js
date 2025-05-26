@@ -1,6 +1,20 @@
 let tabla, id_producto;
 const modal = document.getElementById('modal-agregar');
 const modaleditar = document.getElementById('modal-editar');
+let permisos;
+
+const obtener_permisos = () => {
+    let data = new FormData();
+    data.append('metodo','obtener_permisos');
+    fetch("app/controller/usuario.php",{
+        method:"POST",
+        body: data
+    })
+    .then(respuesta => respuesta.json())
+    .then(async respuesta => {
+        permisos = respuesta[0].rol_productos.split(',');
+    });
+}
 
 const obtener_datos = () => {
     let data = new FormData();
@@ -31,30 +45,38 @@ const obtener_datos = () => {
                     {
                         data: 'producto_id',
                         render: function(data, type, row) {
-                            return `
-                                <button class="btn btn-warning editar-producto"
-                                    data-bs-toggle="modal" data-bs-target="#modal-editar"
-                                    data-id="${data}" 
-                                    data-codigo="${row.producto_codigo}" 
-                                    data-nombre="${row.producto_nombre}" 
-                                    data-ucompra="${row.producto_uCompra}" 
-                                    data-uventa="${row.producto_uVenta}" 
-                                    data-ucantidad="${row.producto_uCantidad}" 
-                                    data-pcompra="${row.producto_pCompra}" 
-                                    data-pcosto="${row.producto_pCosto}" 
-                                    data-precio="${row.producto_precio}" 
-                                    data-cantidad="${row.producto_cantidad}"
-                                    data-cantidadminima="${row.producto_cantidad_minima}"
-                                    data-cantidadmaxima="${row.producto_cantidad_maxima}"
-                                >
-                                    Editar
-                                </button>
-                                <button class="btn btn-danger eliminar-producto" 
-                                    data-id="${data}" 
-                                >
-                                    Eliminar
-                                </button>
-                            `;
+                            let botones = ''
+                            if (permisos.filter(p => p == 'editar_productos').length > 0) {
+                                botones += `
+                                    <button class="btn btn-warning editar-producto"
+                                        data-bs-toggle="modal" data-bs-target="#modal-editar"
+                                        data-id="${data}" 
+                                        data-codigo="${row.producto_codigo}" 
+                                        data-nombre="${row.producto_nombre}" 
+                                        data-ucompra="${row.producto_uCompra}" 
+                                        data-uventa="${row.producto_uVenta}" 
+                                        data-ucantidad="${row.producto_uCantidad}" 
+                                        data-pcompra="${row.producto_pCompra}" 
+                                        data-pcosto="${row.producto_pCosto}" 
+                                        data-precio="${row.producto_precio}" 
+                                        data-cantidad="${row.producto_cantidad}"
+                                        data-cantidadminima="${row.producto_cantidad_minima}"
+                                        data-cantidadmaxima="${row.producto_cantidad_maxima}"
+                                    >
+                                        Editar
+                                    </button>
+                                `;
+                            }
+                            if (permisos.filter(p => p == 'eliminar_productos').length > 0) {
+                                botones += `
+                                    <button class="btn btn-danger eliminar-producto" 
+                                        data-id="${data}" 
+                                    >
+                                        Eliminar
+                                    </button>
+                                `;
+                            }
+                            return botones;
                         }
                     }
                 ],
@@ -63,15 +85,19 @@ const obtener_datos = () => {
                 language: { url: "./public/json/lenguaje.json" },
                 dom: '<"custom-toolbar"lf>tip', 
                 initComplete: () => {
-                    $("div.custom-toolbar").prepend(`
-                        <div class="left-section">
-                            <button class="btn btn-info"
-                                data-bs-toggle="modal" data-bs-target="#modal-agregar"
-                            >
-                                <i class="bi bi-plus-lg fs-5"></i>
-                            </button>
-                        </div>
-                    `);
+                    if (permisos.filter(p => p == 'agregar_productos').length > 0) {
+                        $("div.custom-toolbar").prepend(`
+                            <div class="left-section">
+                                <button class="btn btn-info"
+                                    data-bs-toggle="modal" data-bs-target="#modal-agregar"
+                                >
+                                    <i class="bi bi-plus-lg fs-5"></i>
+                                </button>
+                            </div>
+                        `);
+                    }else {
+                        $("div.custom-toolbar").prepend('');
+                    }
                     $("div.custom-toolbar .dataTables_filter").appendTo(".custom-toolbar").addClass("right-section");
                 }
             });
@@ -147,12 +173,13 @@ const eliminar_producto = (id) => {
             cantidad_productos();
             cantidad_por_acabarse();
         } else if(respuesta[0] == 0) {
-            await Swal.fire({icon: "error",title:`${respuesta[1]}`});
+            await Swal.fire({icon: "error",title:`${respuesta[1]}`,text:`${respuesta[2]}`});
         }
     })
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    obtener_permisos();
     obtener_datos();
 });
 

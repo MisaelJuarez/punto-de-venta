@@ -1,3 +1,9 @@
+<?php
+if (!isset($_SESSION['usuario'])) {
+    header("location:login");
+    exit();
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -33,6 +39,8 @@
                 <input class="form-control" type="password" name="pass" id="pass" placeholder="">
                 <label for="pass" class="text-black">Ingrese su nueva contraseña</label>
             </div> 
+            <select class="form-select form-select-sm mb-3" aria-label=".form-select-sm example" name="rol" id="rol">
+            </select>
             <button type="button" class="btn btn-secondary w-100 text-dark" id="btn-registrar">Registrar usuario</button>
         </form>
     </div>

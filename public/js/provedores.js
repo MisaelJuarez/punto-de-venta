@@ -1,6 +1,20 @@
 let tabla, id_provedor;
 const modal = document.getElementById('modal-agregar');
 const modaleditar = document.getElementById('modal-editar');
+let permisoss;
+
+const obtener_permisos = () => {
+    let data = new FormData();
+    data.append('metodo','obtener_permisos');
+    fetch("app/controller/usuario.php",{
+        method:"POST",
+        body: data
+    })
+    .then(respuesta => respuesta.json())
+    .then(async respuesta => {
+        permisoss = respuesta[0].rol_provedores.split(',');                
+    });
+}
 
 const obtener_provedores = () => {
     let data = new FormData();
@@ -28,26 +42,34 @@ const obtener_provedores = () => {
                     {
                         data: 'provedor_id',
                         render: function(data, type, row) {
-                            return `
-                                <button class="btn btn-warning editar-provedor"
-                                    data-bs-toggle="modal" data-bs-target="#modal-editar"
-                                    data-id="${data}" 
-                                    data-nombre="${row.provedor_nombre}" 
-                                    data-empresa="${row.provedor_empresa}" 
-                                    data-telefono="${row.provedor_telefono}" 
-                                    data-email="${row.provedor_email}"
-                                    data-direccion="${row.provedor_direccion}"
-                                    data-rfc="${row.provedor_rfc}"
-                                    data-pago="${row.provedor_pago}"
-                                >
-                                    Editar
-                                </button>
-                                <button class="btn btn-danger eliminar-provedor" 
-                                    data-id="${data}" 
-                                >
-                                    Eliminar
-                                </button>
-                            `;
+                            let botones = ''
+                            if (permisoss.filter(p => p == 'editar_provedores').length > 0) {
+                                botones += `
+                                    <button class="btn btn-warning editar-provedor"
+                                        data-bs-toggle="modal" data-bs-target="#modal-editar"
+                                        data-id="${data}" 
+                                        data-nombre="${row.provedor_nombre}" 
+                                        data-empresa="${row.provedor_empresa}" 
+                                        data-telefono="${row.provedor_telefono}" 
+                                        data-email="${row.provedor_email}"
+                                        data-direccion="${row.provedor_direccion}"
+                                        data-rfc="${row.provedor_rfc}"
+                                        data-pago="${row.provedor_pago}"
+                                    >
+                                        Editar
+                                    </button>
+                                `;
+                            }
+                            if (permisoss.filter(p => p == 'eliminar_provedores').length > 0) {
+                                botones += `
+                                    <button class="btn btn-danger eliminar-provedor" 
+                                        data-id="${data}" 
+                                    >
+                                        Eliminar
+                                    </button>
+                                `;
+                            }
+                            return botones;
                         }
                     }
                 ],
@@ -56,15 +78,19 @@ const obtener_provedores = () => {
                 language: { url: "./public/json/lenguaje.json" },
                 dom: '<"custom-toolbar"lf>tip', 
                 initComplete: () => {
-                    $("div.custom-toolbar").prepend(`
-                        <div class="left-section">
-                            <button class="btn btn-info"
-                                data-bs-toggle="modal" data-bs-target="#modal-agregar"
-                            >
-                                <i class="bi bi-plus-lg fs-5"></i>
-                            </button>
-                        </div>
-                    `);
+                    if (permisoss.filter(p => p == 'agregar_provedores').length > 0) {
+                        $("div.custom-toolbar").prepend(`
+                            <div class="left-section">
+                                <button class="btn btn-info"
+                                    data-bs-toggle="modal" data-bs-target="#modal-agregar"
+                                >
+                                    <i class="bi bi-plus-lg fs-5"></i>
+                                </button>
+                            </div>
+                        `);
+                    }else {
+                        $("div.custom-toolbar").prepend('');
+                    }
                     $("div.custom-toolbar .dataTables_filter").appendTo(".custom-toolbar").addClass("right-section");
                 }
             });
@@ -139,6 +165,7 @@ const eliminar_provedor = (id) => {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    obtener_permisos();
     obtener_provedores();
 });
 

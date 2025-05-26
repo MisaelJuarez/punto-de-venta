@@ -1,3 +1,33 @@
+let permisos_comprar;
+let permisos_detalles;
+
+const obtener_permisos_comprar = () => {
+    let data = new FormData();
+    data.append('metodo','obtener_permisos');
+    fetch("app/controller/usuario.php",{
+        method:"POST",
+        body: data
+    })
+    .then(respuesta => respuesta.json())
+    .then(async respuesta => {
+        permisos_comprar = respuesta[0].rol_compras.split(',');
+        document.getElementById('comprar').style.pointerEvents = permisos_comprar.filter(p => p == 'realizar_compras').length > 0 ? 'auto' : 'none'; 
+    });
+}
+const obtener_permisos_detalles = () => {
+    let data = new FormData();
+    data.append('metodo','obtener_permisos');
+    fetch("app/controller/usuario.php",{
+        method:"POST",
+        body: data
+    })
+    .then(respuesta => respuesta.json())
+    .then(async respuesta => {
+        permisos_detalles = respuesta[0].rol_detalles.split(',');
+        document.getElementById('detalles').style.pointerEvents = permisos_detalles.filter(p => p == 'ver_detalles').length > 0 ? 'auto' : 'none'; 
+    });
+}
+
 const cerrar_session = () => {
     fetch("app/controller/cerrar_sesion.php")
     .then(respuesta => respuesta.json())
@@ -56,6 +86,8 @@ document.getElementById('cerrar_session').addEventListener('click',() => {
 });
 
 document.addEventListener('DOMContentLoaded', () => {
+    obtener_permisos_comprar();
+    obtener_permisos_detalles();
     cantidad_productos();
     cantidad_por_acabarse();
 })

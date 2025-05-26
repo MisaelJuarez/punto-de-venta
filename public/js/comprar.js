@@ -1,5 +1,22 @@
 let productos = '', tablaProvedor, tableProducto, tablaProductoAcabarse,total_compras = 0,id_producto;
 const modal = document.getElementById('generar-compra');
+let comprar_permiso;
+const redireccionar = () => {
+    let data = new FormData();
+    data.append('metodo','obtener_permisos');
+    fetch("app/controller/usuario.php",{
+        method:"POST",
+        body: data
+    })
+    .then(respuesta => respuesta.json())
+    .then(async respuesta => {
+        comprar_permiso = respuesta[0].rol_compras.split(',');        
+        
+        if (comprar_permiso.filter(p => p == 'realizar_compras').length <= 0){
+            window.location.href = 'inicio';
+        } 
+    });
+}
 
 const obtener_provedores = () => {
     let data = new FormData();
@@ -173,30 +190,36 @@ const productos_por_comprar = () => {
 };
 
 const agregar_lista_producto = () => {
-    let data = new FormData();
-    data.append('id',id_producto);
-    data.append('codigo',document.getElementById('codigo').value);
-    data.append('nombre-producto',document.getElementById('nombre-producto').value);
-    data.append('cantidad-comprar',parseInt(document.getElementById('cantidad-comprar').value));
-    data.append('precio-comprar',parseFloat(document.getElementById('precio-comprar').value).toFixed(2));
-    data.append('metodo','agregar_lista_producto');
-    fetch("app/controller/home.php",{
-        method:"POST",
-        body: data
-    })
-    .then(respuesta => respuesta.json())
-    .then(async respuesta => {
-        if (respuesta[0] == 1) {
-            await Swal.fire({icon: "success",title:`${respuesta[1]}`});
-            document.getElementById('formulario-comprar').reset();
-            obtener_lista_comprar();
-        } else if(respuesta[0] == 0) {
-            Swal.fire({
-                title: `${respuesta[1]}`,
-                icon: "error"
-            });
-        }
-    })
+
+    if (document.getElementById('cantidad-comprar').value == '' || document.getElementById('precio-comprar').value == '') {
+        Swal.fire({icon: "error",title:`Datos incompletos`});
+    }else {
+        let data = new FormData();
+        data.append('id',id_producto);
+        data.append('codigo',document.getElementById('codigo').value);
+        data.append('nombre-producto',document.getElementById('nombre-producto').value);
+        data.append('cantidad-comprar',parseInt(document.getElementById('cantidad-comprar').value));
+        data.append('precio-comprar',parseFloat(document.getElementById('precio-comprar').value).toFixed(2));
+        data.append('metodo','agregar_lista_producto');
+        fetch("app/controller/home.php",{
+            method:"POST",
+            body: data
+        })
+        .then(respuesta => respuesta.json())
+        .then(async respuesta => {
+            if (respuesta[0] == 1) {
+                await Swal.fire({icon: "success",title:`${respuesta[1]}`});
+                document.getElementById('formulario-comprar').reset();
+                obtener_lista_comprar();
+            } else if(respuesta[0] == 0) {
+                Swal.fire({
+                    title: `${respuesta[1]}`,
+                    icon: "error"
+                });
+            }
+        })
+    }
+
 }
 
 const obtener_lista_comprar = () => {
@@ -351,5 +374,6 @@ document.getElementById('lista-comprar').addEventListener('click', (e) => {
 });
 
 document.addEventListener('DOMContentLoaded', () => {
+    redireccionar();
     obtener_lista_comprar();
 })

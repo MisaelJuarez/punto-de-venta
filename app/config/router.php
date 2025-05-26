@@ -21,6 +21,10 @@
             require_once './views/administrar.php';
             break;
         }
+        case "rol":{
+            require_once './views/rol.php';
+            break;
+        }
         case "inicio":{
             require_once './views/home.php';
             break;

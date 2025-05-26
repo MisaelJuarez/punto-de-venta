@@ -1,4 +1,22 @@
-let tabla;
+let tabla,compras = '';
+
+let detalles_permiso;
+const redireccionar = () => {
+    let data = new FormData();
+    data.append('metodo','obtener_permisos');
+    fetch("app/controller/usuario.php",{
+        method:"POST",
+        body: data
+    })
+    .then(respuesta => respuesta.json())
+    .then(async respuesta => {
+        detalles_permiso = respuesta[0].rol_detalles.split(',');        
+        
+        if (detalles_permiso.filter(p => p == 'ver_detalles').length <= 0){
+            window.location.href = 'inicio';
+        } 
+    });
+}
 
 const obtener_cortes_caja = () => {
     let data = new FormData();
@@ -46,6 +64,45 @@ const obtener_cortes_caja = () => {
     });
 };
 
+const obtener_compras_por_fecha = (fecha) => {
+    compras = '';
+    let data = new FormData();
+    data.append('metodo','obtener_compras_por_fecha');
+    data.append('fecha',fecha);
+    fetch("app/controller/home.php",{
+        method:"POST",
+        body: data
+    })
+    .then(respuesta => respuesta.json())
+    .then(async respuesta => {
+        respuesta.map((compra => {
+            compras += `
+                <div class="col-1">
+                    <p class="mb-3">Fecha:</p>
+                    <p class="mb-3">Hora:</p>
+                    <p class="mb-3">Usuario:</p>
+                </div>
+                <div class="col-2">
+                    <input class="form-control form-control-sm text-end mb-2" value="${compra['comprar_fecha']}" disabled readonly>
+                    <input class="form-control form-control-sm text-end mb-2" value="${compra['comprar_hora']}" disabled readonly>
+                    <input class="form-control form-control-sm text-end mb-2" value="${compra['comprar_usuario']}" disabled readonly>
+                </div>
+                <div class="col-1">
+                    <p class="mb-3">Provedor:</p>
+                    <p class="mb-3">Total:</p>
+                </div>
+                <div class="col-2">
+                    <input class="form-control form-control-sm text-end mb-2" value="${compra['comprar_provedor']}" disabled readonly>
+                    <input class="form-control form-control-sm text-end mb-2" value="${compra['comprar_total']}" disabled readonly>
+                </div>
+                <div class="col-6"></div>
+                <hr>
+            `;
+        }));
+        document.getElementById('compras_hechas').innerHTML = compras;
+    });
+}
+
 const visualizar_corte = (id) => {
     let data = new FormData();
     data.append('metodo','visualizar_corte');
@@ -56,6 +113,7 @@ const visualizar_corte = (id) => {
     })
     .then(respuesta => respuesta.json())
     .then(async respuesta => {
+        console.log(respuesta);
         document.getElementById('fecha').value = respuesta[0]['corte_fecha'];
         document.getElementById('hora').value = respuesta[0]['corte_hora'];
         document.getElementById('usuario').value = respuesta[0]['corte_usuario'];
@@ -65,7 +123,8 @@ const visualizar_corte = (id) => {
         document.getElementById('diferencia').value = respuesta[0]['corte_diferencia'];
 
         document.getElementById('total').value =  respuesta[0]['corte_contado'];
-
+        
+        obtener_compras_por_fecha(respuesta[0]['corte_fecha']);
     });
 }
 
@@ -78,3 +137,7 @@ document.getElementById('myTable').addEventListener('click', (e) => {
         visualizar_corte(e.target.dataset.id);
     }
 });
+
+document.addEventListener('DOMContentLoaded', () => {
+    redireccionar();
+})

@@ -1,3 +1,20 @@
+const redireccionar = () => {
+    let data = new FormData();
+    data.append('metodo','obtener_permisos');
+    fetch("app/controller/usuario.php",{
+        method:"POST",
+        body: data
+    })
+    .then(respuesta => respuesta.json())
+    .then(async respuesta => {
+        permisos = respuesta[0].rol_usuarios.split(',');        
+        
+        if (permisos.filter(p => p == 'informacion').length <= 0){
+            window.location.href = 'inicio';
+        } 
+    });
+}
+
 const obtener_informacion = () => {
     let data = new FormData();
     data.append('metodo','obtener_informacion');
@@ -32,6 +49,7 @@ const actualizar_informacion = () => {
 }
 
 document.addEventListener('DOMContentLoaded',() => {
+    redireccionar();
     obtener_informacion();
 });
 

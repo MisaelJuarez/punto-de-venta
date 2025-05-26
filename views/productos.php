@@ -86,7 +86,7 @@ if (!isset($_SESSION['usuario'])) {
                     </div>
                     <div class="col-md-4 d-flex align-items-end">
                         <label for="pCosto" class="form-label me-3">Costo:</label>
-                        <input type="number" class="form-control w-25 me-3" name="pCosto" id="pCosto" required disabled readonly>
+                        <input type="number" class="form-control w-25 me-3" name="pCosto" id="pCosto" required readonly>
                         <span class="text-dark fs-4">X <span id="unidadCosto"></span></span>
                     </div>
                     <div class="col-md-2"></div>
@@ -169,7 +169,7 @@ if (!isset($_SESSION['usuario'])) {
                     </div>
                     <div class="col-md-4 d-flex align-items-end">
                         <label for="pCosto-editar" class="form-label me-3">Costo:</label>
-                        <input type="number" class="form-control w-25 me-3" name="pCosto-editar" id="pCosto-editar" required disabled readonly>
+                        <input type="number" class="form-control w-25 me-3" name="pCosto-editar" id="pCosto-editar" required readonly>
                         <span class="text-dark fs-4">X <span id="unidadCosto-editar"></span></span>
                     </div>
                     <div class="col-md-2"></div>

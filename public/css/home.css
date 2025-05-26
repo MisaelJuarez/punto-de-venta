@@ -1,6 +1,6 @@
 .card-icon {
     color: black;
-    font-size: 8rem;
+    font-size: 5rem;
 }
 
 .card-header {
@@ -13,6 +13,7 @@
     text-align: center;
 }
 .card {
+    height: 180px;
     -webkit-border-radius: 14px;
     border-radius: 14px;
     background: rgb(221, 221, 221);
@@ -45,6 +46,10 @@
 
 .header-inventario {
     background-color: rgb(235, 255, 108);
+}
+
+.header-rol {
+    background-color: rgb(255, 174, 108);
 }
 
 .card-header:first-child {

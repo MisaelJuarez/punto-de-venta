@@ -55,6 +55,15 @@ if (!isset($_SESSION['usuario'])) {
             </div>
             <div class="col-6"></div>
         </div>
+        <div class="row mt-3">
+            <div class="col">
+                <div class="p-3 mb-2 bg-secondary text-white">Datos de compras</div>
+            </div>
+        </div>
+        
+        <div class="row mt-3" id="compras_hechas">
+        </div>
+
     </div>
 
     <div class="modal fade" id="bucar-cortes" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">

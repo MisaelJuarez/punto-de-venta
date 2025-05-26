@@ -17,24 +17,39 @@ class Usuario extends Conexion {
         $correo = $_POST['correo'];
         $pass= $_POST['pass'];
 
-        if (empty($_POST['nombre']) || empty($_POST['apellidos']) || empty($_POST['correo']) || empty($_POST['pass'])) {
+        if (empty($_POST['nombre']) || empty($_POST['apellidos']) || empty($_POST['correo'])) {
             echo json_encode([0,"Campos incompletos"]);
         } else if(is_numeric($nombre) || is_numeric($apellidos)) {
             echo json_encode([0,"No puedes ingresar numeros en nombre y apellidos"]);
         } else {
-            $actualizacion = $this->obtener_conexion()->prepare("UPDATE t_usuarios 
-            SET usuario_usuario = :nombre, usuario_apellidos = :apellidos, usuario_correo = :correo, usuario_password = :pass  
-            WHERE usuario_id = :id");
-            
-            $actualizacion->bindParam(':nombre',$nombre);
-            $actualizacion->bindParam(':apellidos',$apellidos);
-            $actualizacion->bindParam(':correo',$correo);
-            $passw = password_hash($pass,PASSWORD_BCRYPT);
-            $actualizacion->bindParam(':pass',$passw);
-            $actualizacion->bindParam(':id',$_SESSION['usuario']['usuario_id']);
-            $actualizacion->execute();
-            $this->cerrar_conexion();
-            echo json_encode([1,"Actualizacion correcta","Tu session se cerrara para que ingreses de nuevo tus datos"]);
+            if (empty($pass)) {
+                $actualizacion = $this->obtener_conexion()->prepare("UPDATE t_usuarios 
+                SET usuario_usuario = :nombre, usuario_apellidos = :apellidos, usuario_correo = :correo 
+                WHERE usuario_id = :id");
+                
+                $actualizacion->bindParam(':nombre',$nombre);
+                $actualizacion->bindParam(':apellidos',$apellidos);
+                $actualizacion->bindParam(':correo',$correo);
+                $actualizacion->bindParam(':id',$_SESSION['usuario']['usuario_id']);
+                $actualizacion->execute();
+                $this->cerrar_conexion();
+                echo json_encode([1,"Actualizacion correcta","Tu session se cerrara para que ingreses de nuevo tus datos"]);
+            }else {
+                $actualizacion = $this->obtener_conexion()->prepare("UPDATE t_usuarios 
+                SET usuario_usuario = :nombre, usuario_apellidos = :apellidos, usuario_correo = :correo, usuario_password = :pass  
+                WHERE usuario_id = :id");
+                
+                $actualizacion->bindParam(':nombre',$nombre);
+                $actualizacion->bindParam(':apellidos',$apellidos);
+                $actualizacion->bindParam(':correo',$correo);
+                $passw = password_hash($pass,PASSWORD_BCRYPT);
+                $actualizacion->bindParam(':pass',$passw);
+                $actualizacion->bindParam(':id',$_SESSION['usuario']['usuario_id']);
+                $actualizacion->execute();
+                $this->cerrar_conexion();
+                echo json_encode([1,"Actualizacion correcta","Tu session se cerrara para que ingreses de nuevo tus datos"]);
+            }
+
         }
     }
     public function registrar_usuario() {
@@ -42,21 +57,23 @@ class Usuario extends Conexion {
         $apellidos = $_POST['apellidos'];
         $correo = $_POST['correo'];
         $pass = $_POST['pass'];
+        $rol = $_POST['rol'];
 
-        if (empty($nombre) || empty($apellidos) || empty($correo) || empty($pass)) {
+        if (empty($nombre) || empty($apellidos) || empty($correo) || empty($pass) || empty($rol)) {
             echo json_encode([0,"Campos incompletos"]);
         } else if (is_numeric($nombre) || is_numeric($apellidos)) {
             echo json_encode([0,"No puedes ingresar numeros en nombre y apellidos"]);
         } else {
             $insercion = $this->obtener_conexion()->prepare("INSERT INTO t_usuarios (usuario_usuario,usuario_apellidos,
-                                                                usuario_correo,usuario_password) 
-            VALUES(:nombre,:apellidos,:correo,:pass)");
+                                                                usuario_correo,usuario_password,id_rol) 
+            VALUES(:nombre,:apellidos,:correo,:pass,:rol)");
             
             $insercion->bindParam(':nombre',$nombre);
             $insercion->bindParam(':apellidos',$apellidos);
             $insercion->bindParam(':correo',$correo);
             $passw = password_hash($pass,PASSWORD_BCRYPT);
             $insercion->bindParam(':pass',$passw);
+            $insercion->bindParam(':rol',$rol);
             $insercion->execute();
             $this->cerrar_conexion();
 
@@ -68,7 +85,21 @@ class Usuario extends Conexion {
         }
     }
     public function obtener_datos_usuarios(){
-        $consulta = $this->obtener_conexion()->prepare("SELECT * FROM t_usuarios WHERE usuario_id != :id");
+        $consulta = $this->obtener_conexion()->prepare("SELECT 
+            t_usuarios.usuario_id,
+            t_usuarios.usuario_usuario,
+            t_usuarios.usuario_apellidos,
+            t_usuarios.usuario_password,
+            t_usuarios.usuario_correo,
+            t_usuarios.id_rol,
+            
+            t_rol.rol_id,
+            t_rol.rol_nombre
+            FROM 
+                t_usuarios
+            JOIN
+                t_rol ON t_usuarios.id_rol = t_rol.rol_id
+            WHERE usuario_id != :id");
         $consulta->bindParam(':id',$_SESSION['usuario']['usuario_id']);
         $consulta->execute();
         $datos = $consulta->fetchAll(PDO::FETCH_ASSOC);
@@ -81,31 +112,57 @@ class Usuario extends Conexion {
         $apellidos = $_POST['apellidos-editar'];
         $correo = $_POST['correo-editar'];
         $pass= $_POST['pass-editar'];
+        $rol= $_POST['rol'];
 
-        if (empty($nombre) || empty($apellidos) || empty($correo) || empty($pass)) {
+        if (empty($nombre) || empty($apellidos) || empty($correo) || empty($rol)) {
             echo json_encode([0,"Campos incompletos"]);
         } else if(is_numeric($nombre) || is_numeric($apellidos)) {
             echo json_encode([0,"No puedes ingresar numeros en nombre y apellidos"]);
         } else {
-            $actualizacion = $this->obtener_conexion()->prepare("UPDATE t_usuarios 
-            SET usuario_usuario = :nombre, usuario_apellidos = :apellidos, usuario_correo = :correo, usuario_password = :pass  
-            WHERE usuario_id = :id");
-            
-            $actualizacion->bindParam(':nombre',$nombre);
-            $actualizacion->bindParam(':apellidos',$apellidos);
-            $actualizacion->bindParam(':correo',$correo);
-            $passw = password_hash($pass,PASSWORD_BCRYPT);
-            $actualizacion->bindParam(':pass',$passw);
-            $actualizacion->bindParam(':id',$id);
-            
-            $actualizacion->execute();
-            $this->cerrar_conexion();
 
-            if ($actualizacion) {
-                echo json_encode([1,"Actualizacion correcta"]);
+            if (empty($pass)) {
+                $actualizacion = $this->obtener_conexion()->prepare("UPDATE t_usuarios 
+                SET usuario_usuario = :nombre, usuario_apellidos = :apellidos, usuario_correo = :correo, id_rol = :rol  
+                WHERE usuario_id = :id");
+                
+                $actualizacion->bindParam(':nombre',$nombre);
+                $actualizacion->bindParam(':apellidos',$apellidos);
+                $actualizacion->bindParam(':correo',$correo);
+                $actualizacion->bindParam(':rol',$rol);
+                $actualizacion->bindParam(':id',$id);
+                
+                $actualizacion->execute();
+                $this->cerrar_conexion();
+    
+                if ($actualizacion) {
+                    echo json_encode([1,"Actualizacion correcta"]);
+                }else {
+                    echo json_encode([0,"Error al actualizar"]);
+                }
             }else {
-                echo json_encode([0,"Error al actualizar"]);
+                $actualizacion = $this->obtener_conexion()->prepare("UPDATE t_usuarios 
+                SET usuario_usuario = :nombre, usuario_apellidos = :apellidos, usuario_correo = :correo, usuario_password = :pass, id_rol = :rol  
+                WHERE usuario_id = :id");
+                
+                $actualizacion->bindParam(':nombre',$nombre);
+                $actualizacion->bindParam(':apellidos',$apellidos);
+                $actualizacion->bindParam(':correo',$correo);
+                $passw = password_hash($pass,PASSWORD_BCRYPT);
+                $actualizacion->bindParam(':pass',$passw);
+                $actualizacion->bindParam(':rol',$rol);
+                $actualizacion->bindParam(':id',$id);
+                
+                $actualizacion->execute();
+                $this->cerrar_conexion();
+    
+                if ($actualizacion) {
+                    echo json_encode([1,"Actualizacion correcta"]);
+                }else {
+                    echo json_encode([0,"Error al actualizar"]);
+                }
             }
+
+
         }
     }
     public function eliminar_usuario() {
@@ -120,6 +177,26 @@ class Usuario extends Conexion {
         } else {
             echo json_encode([0,'Error al eliminar']);
         }
+    }
+    public function obtener_permisos(){
+        $consulta = $this->obtener_conexion()->prepare("SELECT 
+            t_rol.rol_id,
+            t_rol.rol_usuarios,
+            t_rol.rol_productos,
+            t_rol.rol_compras,
+            t_rol.rol_provedores,
+            t_rol.rol_detalles
+
+            FROM 
+                t_usuarios
+            JOIN
+                t_rol ON t_usuarios.id_rol = t_rol.rol_id
+            WHERE usuario_usuario = :usuario");
+        $consulta->bindParam(':usuario',$_SESSION['usuario']['usuario_usuario']);
+        $consulta->execute();
+        $datos = $consulta->fetchAll(PDO::FETCH_ASSOC);
+        $this->cerrar_conexion();
+        echo json_encode($datos);
     }
 }
 

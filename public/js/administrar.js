@@ -1,5 +1,24 @@
 let tabla,id_usuario;
 const modaleditar = document.getElementById('modal-editar');
+let roles = '<option selected disabled>Ingrese el rol del usuario</option>';
+let permisos;
+
+const redireccionar = () => {
+    let data = new FormData();
+    data.append('metodo','obtener_permisos');
+    fetch("app/controller/usuario.php",{
+        method:"POST",
+        body: data
+    })
+    .then(respuesta => respuesta.json())
+    .then(async respuesta => {
+        permisos = respuesta[0].rol_usuarios.split(',');        
+        
+        if (permisos.filter(p => p == 'administrar').length <= 0){
+            window.location.href = 'inicio';
+        } 
+    });
+}
 
 const obtener_datos = () => {
     let data = new FormData();
@@ -20,20 +39,22 @@ const obtener_datos = () => {
                     { data: 'usuario_usuario' }, 
                     { data: 'usuario_apellidos' }, 
                     { data: 'usuario_correo' }, 
+                    { data: 'rol_nombre' }, 
                     {
                         data: 'usuario_id',
                         render: function(data, type, row) {
                             return `
-                                <button class="btn btn-warning w-25 editar-usuario"
+                                <button class="btn btn-warning editar-usuario"
                                     data-bs-toggle="modal" data-bs-target="#modal-editar"
                                     data-id="${data}" 
                                     data-nombre="${row.usuario_usuario}" 
                                     data-apellidos="${row.usuario_apellidos}" 
                                     data-correo="${row.usuario_correo}"   
+                                    data-rol="${row.id_rol}"   
                                 >
                                     Editar
                                 </button>
-                                <button class="btn btn-danger w-25 eliminar-usuario" 
+                                <button class="btn btn-danger eliminar-usuario" 
                                     data-id="${data}" 
                                 >
                                     Eliminar
@@ -90,12 +111,33 @@ const eliminar_usuario = (id) => {
     });
 }
 
+const obtener_roles = () => {
+    let data = new FormData();
+    data.append('metodo','obtener_roles');
+    fetch("app/controller/home.php",{
+        method:"POST",
+        body: data
+    })
+    .then(respuesta => respuesta.json())
+    .then(async respuesta => {
+
+        respuesta.map(rol => {
+            roles += `
+                <option value="${rol.rol_id}">${rol.rol_nombre}</option>
+            `;
+        });
+        document.getElementById('rol').innerHTML = roles;
+    });
+}
+
 document.getElementById('editar-usuario').addEventListener('click',() => {
     editar_usuario();
 });
 
 document.addEventListener('DOMContentLoaded', () => {
+    redireccionar();
     obtener_datos();
+    obtener_roles();
 });
 
 document.getElementById('myTable').addEventListener('click', (e) => {
@@ -106,6 +148,7 @@ document.getElementById('myTable').addEventListener('click', (e) => {
         document.getElementById('nombre-editar').value = botonEditar.dataset.nombre;
         document.getElementById('apellidos-editar').value = botonEditar.dataset.apellidos;
         document.getElementById('correo-editar').value = botonEditar.dataset.correo;
+        document.getElementById('rol').value = botonEditar.dataset.rol;
     }
     if (botonEliminar) {
         Swal.fire({

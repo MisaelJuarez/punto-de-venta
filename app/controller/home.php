@@ -11,6 +11,14 @@ class Home extends Conexion {
         echo json_encode($datos);
     }
 
+    public function obtener_datos_caja(){
+        $consulta = $this->obtener_conexion()->prepare("SELECT * FROM t_productos WHERE producto_cantidad > 0");
+        $consulta->execute();
+        $datos = $consulta->fetchAll(PDO::FETCH_ASSOC);
+        $this->cerrar_conexion();
+        echo json_encode($datos);
+    }
+
     public function agregar_producto() {
         if (isset($_POST['codigo']) && !empty($_POST['codigo']) && 
             isset($_POST['nombre']) && !empty($_POST['nombre']) && 
@@ -56,7 +64,7 @@ class Home extends Conexion {
                 echo json_encode([0,"La cantidad maxima tiene que ser mayor a tu cantidad"]);
             } else {
                 $consulta = $this->obtener_conexion()->prepare("SELECT * FROM t_productos 
-                                                                WHERE producto_codigo = :codigo OR producto_nombre = :nombre");
+                                    WHERE producto_codigo = :codigo OR producto_nombre = :nombre");
                 $consulta->bindParam(':codigo',$codigo);
                 $consulta->bindParam(':nombre',$nombre);
                 $consulta->execute();
@@ -160,14 +168,24 @@ class Home extends Conexion {
     public function eliminar_producto() {
         $id = $_POST['id'];
 
-        $eliminar = $this->obtener_conexion()->prepare("DELETE FROM t_productos WHERE producto_id = :id");
-        $eliminar->bindParam(':id',$id);
-        $eliminar->execute();
+        $consulta = $this->obtener_conexion()->prepare("SELECT * FROM t_productos WHERE producto_id = :id");
+        $consulta->bindParam(':id',$id);
+        $consulta->execute();
+        $datos = $consulta->fetchAll(PDO::FETCH_ASSOC);
         $this->cerrar_conexion();
-        if ($eliminar) {
-            echo json_encode([1,'Producto eliminado']);
-        } else {
-            echo json_encode([0,'Error al eliminar el producto']);
+
+        if ($datos[0]['producto_cantidad'] > 0) {
+            echo json_encode([0,'No puedes eliminar este producto','La existencia del producto tiene que ser 0']);
+        }else {
+            $eliminar = $this->obtener_conexion()->prepare("DELETE FROM t_productos WHERE producto_id = :id");
+            $eliminar->bindParam(':id',$id);
+            $eliminar->execute();
+            $this->cerrar_conexion();
+            if ($eliminar) {
+                echo json_encode([1,'Producto eliminado']);
+            } else {
+                echo json_encode([0,'Error al eliminar el producto']);
+            }
         }
     }
 
@@ -502,9 +520,7 @@ class Home extends Conexion {
         $precio_comprar = $_POST['precio-comprar'];
         $total = $cantidad_comprar * $precio_comprar;
 
-        if (empty($cantidad_comprar) || empty($precio_comprar)) {
-            echo json_encode([0,"Tienes que ingresar la cantidad y el precio"]);
-        } else if ($cantidad_comprar <= 0){
+        if ($cantidad_comprar <= 0){
             echo json_encode([0,"Tienes que ingresar una cantidad valida"]);
         } else if($precio_comprar <= 0){
             echo json_encode([0,"Tienes que ingresar un precio valido"]);
@@ -538,7 +554,6 @@ class Home extends Conexion {
                 }
             }
         }
-
     }
 
     public function obtener_lista_comprar() {
@@ -583,7 +598,7 @@ class Home extends Conexion {
 
         for ($i=0; $i < count($datos); $i++) { 
             $actualizacion = $this->obtener_conexion()->prepare("UPDATE t_productos 
-            SET producto_cantidad = producto_uCantidad * :cantidad
+            SET producto_cantidad = producto_cantidad + (producto_uCantidad * :cantidad)
             WHERE producto_id = :id");
             
             $actualizacion->bindParam(':cantidad',$datos[$i]['lista_cantidad']);
@@ -651,6 +666,69 @@ class Home extends Conexion {
                 $this->agregar_compra($fecha,$hora,$provedor,$usuario,$total_pagar);
             }
 
+        }
+
+    }
+
+    public function obtener_compras_por_fecha() {
+        $fecha = $_POST['fecha'];
+
+        $consulta = $this->obtener_conexion()->prepare("SELECT * FROM t_compras WHERE comprar_fecha = :fecha");
+        $consulta->bindParam(':fecha',$fecha);
+        $consulta->execute();
+        $datos = $consulta->fetchAll(PDO::FETCH_ASSOC);
+        $this->cerrar_conexion();
+        echo json_encode($datos);
+    }
+
+    public function obtener_roles() {
+        $consulta = $this->obtener_conexion()->prepare("SELECT * FROM t_rol");
+        $consulta->execute();
+        $datos = $consulta->fetchAll(PDO::FETCH_ASSOC);
+        $this->cerrar_conexion();
+        echo json_encode($datos);
+    }
+
+    public function crear_rol() {
+        if (empty($_POST['nombre_rol'])) {
+            echo json_encode([0,"Tienes que ingresar el nombre de tu rol"]);
+        } else {
+            $pUsuarios = $_POST['pUsuarios'];
+            $pProductos = $_POST['pProductos'];
+            $pCompras = $_POST['pCompras'];
+            $pProvedores = $_POST['pProvedores'];
+            $pDetalles = $_POST['pDetalles'];
+            $nombre_rol = $_POST['nombre_rol'];
+    
+            $consulta = $this->obtener_conexion()->prepare("SELECT * FROM t_rol 
+                        WHERE rol_nombre = :nombre_rol");
+            $consulta->bindParam(':nombre_rol',$nombre_rol);
+            $consulta->execute();
+            $datos = $consulta->fetchAll(PDO::FETCH_ASSOC);
+            $this->cerrar_conexion();
+    
+            if ($datos) {
+                echo json_encode([0,"El nombre de este rol ya esta registrado"]);
+            } else {
+                $insercion = $this->obtener_conexion()->prepare("INSERT INTO t_rol (rol_nombre,rol_usuarios,
+                rol_productos,rol_compras,rol_provedores,rol_detalles) 
+                VALUES(:nombre_rol,:pUsuarios,:pProductos,:pCompras,:pProvedores,:pDetalles)");
+                
+                $insercion->bindParam(':nombre_rol',$nombre_rol);
+                $insercion->bindParam(':pUsuarios',$pUsuarios);
+                $insercion->bindParam(':pProductos',$pProductos);
+                $insercion->bindParam(':pCompras',$pCompras);
+                $insercion->bindParam(':pProvedores',$pProvedores);
+                $insercion->bindParam(':pDetalles',$pDetalles);
+                $insercion->execute();
+                $this->cerrar_conexion();
+                
+                if ($insercion) {
+                    echo json_encode([1,"Rol creado correctamente"]);
+                } else {
+                    echo json_encode([0,"Rol NO creado"]);
+                }
+            }
         }
 
     }
