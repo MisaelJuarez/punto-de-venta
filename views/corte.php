@@ -38,19 +38,19 @@ if (!isset($_SESSION['usuario'])) {
                                 </button>
                             </th>
                             <td><input value="0.00" id="contado_efectivo" type="text" class="contado text-end pe-2"></td>
-                            <td><input value="0.00" id="calculado_efectivo" type="text" class="contado text-end pe-2"></td>
+                            <td><input value="0.00" id="calculado_efectivo" type="text" class="contado text-end pe-2" disabled readonly></td>
                             <td><input value="0.00" id="diferencia_efectivo" type="text" class="contado text-end pe-2" disabled readonly></td>
                         </tr>
                         <tr>
                             <th scope="row">Tarjeta</th>
                             <td><input value="0.00" id="contado_tarjeta" type="text" class="text-end pe-2"></td>
-                            <td><input value="0.00" id="calculado_tarjeta" type="text" class="text-end pe-2"></td>
+                            <td><input value="0.00" id="calculado_tarjeta" type="text" class="text-end pe-2" disabled readonly></td>
                             <td><input value="0.00" id="diferencia_tarjeta" type="text" class="text-end pe-2" disabled readonly></td>
                         </tr>
                         <tr>
                             <th scope="row">Tranferencia</th>
                             <td><input value="0.00" id="contado_transferencia" type="text" class="text-end pe-2"></td>
-                            <td><input value="0.00" id="calculado_transferencia" type="text" class="text-end pe-2"></td>
+                            <td><input value="0.00" id="calculado_transferencia" type="text" class="text-end pe-2" disabled readonly></td>
                             <td><input value="0.00" id="diferencia_transferencia" type="text" class="text-end pe-2" disabled readonly></td>
                         </tr>
                         <tr>

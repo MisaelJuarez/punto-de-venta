@@ -48,7 +48,7 @@
             <button id="detalles" type="button" class="btn btn-outline-secondary opcion">
                 <div>
                     <i class="bi bi-journals fs-3"></i>
-                    <p>Detalles de corte</p>
+                    <p>Visualizar datos</p>
                 </div>
             </button>
             <button id="cerrar_session" type="button" class="btn btn-danger salir">

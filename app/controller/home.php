@@ -197,7 +197,8 @@ class Home extends Conexion {
             t_productos.producto_id,
             t_productos.producto_codigo,
             t_productos.producto_nombre,
-            t_productos.producto_precio
+            t_productos.producto_precio,
+            t_productos.producto_cantidad
             FROM 
                 t_ventas
             JOIN 
@@ -354,7 +355,7 @@ class Home extends Conexion {
     public function corte_caja() {
         date_default_timezone_set("America/Mexico_City");
         $fecha = date("Y-m-d");
-        $hora = date("h:i:s A");
+        $hora = (date('I') == 1) ? date("H:i:s", strtotime("-1 hour")) : date("H:i:s");
         $contado = $_POST['contado'];
         $calculado = $_POST['calculado'];
         $diferencia = $_POST['diferencia'];
@@ -622,7 +623,7 @@ class Home extends Conexion {
     public function finalizar_compra() {
         date_default_timezone_set("America/Mexico_City");
         $fecha = date("Y-m-d");
-        $hora = date("h:i:s A");
+        $hora = (date('I') == 1) ? date("H:i:s", strtotime("-1 hour")) : date("H:i:s");
         $provedor = $_POST['provedor'];
         $usuario = $_SESSION['usuario']['usuario_usuario'];
         $total_pagar = $_POST['total-pagar'];
@@ -668,6 +669,14 @@ class Home extends Conexion {
 
         }
 
+    }
+
+    public function obtener_compras_caja() {
+        $consulta = $this->obtener_conexion()->prepare("SELECT * FROM t_compras");
+        $consulta->execute();
+        $datos = $consulta->fetchAll(PDO::FETCH_ASSOC);
+        $this->cerrar_conexion();
+        echo json_encode($datos);
     }
 
     public function obtener_compras_por_fecha() {

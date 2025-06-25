@@ -28,12 +28,12 @@ if (!isset($_SESSION['usuario'])) {
                     </button>
                 </div>
                 <div class="d-flex c-buscador">
-                    <label for="" class="d-flex me-3">
+                    <!-- <label for="" class="d-flex me-3">
                         <i class="bi bi-upc fs-3"></i>
                         <p class="fs-4">Código de barras</p>
                     </label>
                     <input class="form-control me-3 codigo" type="text" placeholder="Código de barras">
-                    <button type="button" class="btn btn-info"><i class="bi bi-search"></i></button>
+                    <button type="button" class="btn btn-info"><i class="bi bi-search"></i></button> -->
                 </div>
             </div>
         </div>

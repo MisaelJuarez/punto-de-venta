@@ -27,7 +27,7 @@ if (!isset($_SESSION['usuario'])) {
             </div>
 
             <div class="card mb-3" id="registrar_usuario" style="width: 12rem;">
-                <div class="card-header header-registrar_usuario">Registrar usuario</div>
+                <div class="card-header header-registrar_usuario">Registrar</div>
                 <div class="card-body">
                     <h5 class="card-title"><i class="bi bi-person-fill-add card-icon"></i></h5>
                     <p class="card-text"></p>

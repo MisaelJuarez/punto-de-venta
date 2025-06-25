@@ -1,4 +1,4 @@
-let tabla,compras = '';
+let tabla,compras = '', tablaCompras = '';
 
 let detalles_permiso;
 const redireccionar = () => {
@@ -63,6 +63,53 @@ const obtener_cortes_caja = () => {
         }
     });
 };
+
+const obtener_compras_caja = () => {
+    let data = new FormData();
+    data.append('metodo', 'obtener_compras_caja');
+    
+    fetch("app/controller/home.php", {
+        method: "POST",
+        body: data
+    })
+    .then(respuesta => respuesta.json())
+    .then((respuesta) => {
+        if (tablaCompras) {
+            tablaCompras.clear().rows.add(respuesta).draw(); 
+        } else {
+            tablaCompras = $('#tableCompras').DataTable({
+                data: respuesta, 
+                columns: [
+                    { data: 'comprar_fecha' }, 
+                    { data: 'comprar_hora' }, 
+                    { data: 'comprar_usuario' }, 
+                    {
+                        data: 'comprar_id',
+                        render: function(data, type, row) {
+                            return `
+                                <button class="btn btn-success visualizar_compra" 
+                                    data-id="${data}" 
+                                    data-fecha="${row.comprar_fecha}" 
+                                    data-bs-dismiss="modal"
+                                >
+                                    visualizar
+                                </button>
+                            `;
+                        }
+                    }
+                ],
+                "lengthChange": false,
+                "pageLength": 5,
+                "info": false,
+                language: { url: "./public/json/lenguaje.json" },
+                dom: '<"custom-toolbar"lf>tip',
+                initComplete: () => {
+                    $("div.custom-toolbar .dataTables_filter").prependTo(".custom-toolbar").addClass("left-section");
+                }
+            });
+        }
+    });
+}
 
 const obtener_compras_por_fecha = (fecha) => {
     compras = '';
@@ -132,9 +179,18 @@ document.getElementById('btn-buscar-corte').addEventListener('click', () => {
     obtener_cortes_caja();
 });
 
+document.getElementById('btn-buscar-compras').addEventListener('click', () => {
+    obtener_compras_caja();
+});
+
 document.getElementById('myTable').addEventListener('click', (e) => {
     if (e.target.closest('.visualizar_producto')) {
         visualizar_corte(e.target.dataset.id);
+    }
+});
+document.getElementById('tableCompras').addEventListener('click', (e) => {
+    if (e.target.closest('.visualizar_compra')) {
+        obtener_compras_por_fecha(e.target.dataset.fecha);
     }
 });
 

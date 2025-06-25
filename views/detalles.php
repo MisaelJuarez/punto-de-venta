@@ -18,16 +18,21 @@ if (!isset($_SESSION['usuario'])) {
         <div class="row">
             <div class="col-2">
                 <button id="btn-buscar-corte" class="btn btn-success mt-4" data-bs-toggle="modal" data-bs-target="#bucar-cortes">
-                    Buscar
+                    Buscar corte
+                    <i class="bi bi-search ps-3"></i>
+                </button>
+            </div>
+            <div class="col-5">
+                <button id="btn-buscar-compras" type="button" class="btn btn-primary mt-4" data-bs-toggle="modal" data-bs-target="#bucar-compras">
+                    Buscar compra
                     <i class="bi bi-search ps-3"></i>
                 </button>
             </div>
             <div class="col-5"></div>
-            <div class="col-5"></div>
         </div>
         <div class="row mt-3">
             <div class="col">
-                <div class="p-3 mb-2 bg-secondary text-white">Datos generales</div>
+                <div class="p-3 mb-2 bg-secondary text-white">Datos de corte</div>
             </div>
         </div>
         <div class="row mt-3">
@@ -90,6 +95,32 @@ if (!isset($_SESSION['usuario'])) {
             </div>
         </div>
     </div>
+
+    <div class="modal fade" id="bucar-compras" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+            <div class="modal-header h-buscar">
+                <h5 class="modal-title" id="staticBackdropLabel">Cortes de caja</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <table id="tableCompras" class="table table-secondary table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">Fecha</th>
+                            <th scope="col">Hora</th>
+                            <th scope="col">Usuario</th>
+                            <th scope="col">Accion</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+            </div>
+        </div>
+    </div>
+
 
     <script src="<?=JS."jquery.js"?>"></script>
     <script src="<?=JS."table.js"?>"></script>

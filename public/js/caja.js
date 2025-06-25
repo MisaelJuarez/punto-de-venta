@@ -71,6 +71,7 @@ const productos_vender = () => {
                     <td>
                         <input type="number" value="${producto['venta_cantidad']}" class="w-25 cantidad_producto" 
                                data-venta="${producto['venta_id']}"
+                               data-cantidad="${producto['producto_cantidad']}"
                         >
                     </td>
                     <td>$<span id="precio_producto_${producto['venta_id']}">${producto['venta_cantidad'] * producto['producto_precio']}</span>
@@ -144,7 +145,11 @@ const eliminar_producto = (id_venta) => {
     });
 }
 
-const aumentar_cantidad = (id,cantidad) => { 
+const aumentar_cantidad = (id,cantidad,pCantidad) => { 
+    console.log(pCantidad);
+    if (parseInt(cantidad) > parseInt(pCantidad)) {
+        cantidad = pCantidad;
+    }
     let data = new FormData();
     data.append('id',id);
     data.append('cantidad',cantidad);
@@ -227,7 +232,7 @@ document.getElementById('productos_vender').addEventListener('input',(e) => {
         if (e.target.value <= 0) {
             e.target.value = 1;
         }
-        aumentar_cantidad(e.target.dataset.venta,e.target.value);
+        aumentar_cantidad(e.target.dataset.venta,e.target.value,e.target.dataset.cantidad);
     }
 });
 
